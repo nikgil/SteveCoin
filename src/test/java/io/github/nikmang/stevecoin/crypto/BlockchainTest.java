@@ -1,4 +1,4 @@
-package io.github.nikmang.crypto;
+package io.github.nikmang.stevecoin.crypto;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;

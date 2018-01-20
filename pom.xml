@@ -23,7 +23,7 @@
 
     <properties>
         <author>Nik Gil</author>
-        <mainClass>io.github.nikmang.daspells.DASpells</mainClass>
+        <mainClass>io.github.nikmang.stevecoin.SteveCoin</mainClass>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

@@ -1,4 +1,4 @@
-package io.github.nikmang.crypto;
+package io.github.nikmang.stevecoin.crypto;
 
 import com.google.common.hash.Hashing;
 
