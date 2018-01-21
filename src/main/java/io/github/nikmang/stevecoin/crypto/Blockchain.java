@@ -1,6 +1,8 @@
 package io.github.nikmang.stevecoin.crypto;
 
 import io.github.nikmang.stevecoin.utils.BinaryTable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -14,6 +16,8 @@ public class Blockchain {
     //TODO: make these config values. Increase minimum tolerance of diff_adjust and decrease block gen speed requirement
     private static final int BLOCK_GEN_INTERVAL = 10 * 1000; //After how many **seconds** should a block be found
     private static final int DIFF_ADJUST_INTERVAL = 10; //After how many blocks should difficulty be adjusted
+
+    private static Logger logger = LogManager.getRootLogger();
 
     private Deque<Block> chain;
 
@@ -61,15 +65,15 @@ public class Blockchain {
      */
     private static boolean isValidBlock(Block block, Block oldBlock) {
         if (block.getIndex() != oldBlock.getIndex() + 1) {
-            System.err.println("Block index is invalid\n" + block.getData());
+            logger.debug("Block index is invalid " + block.getData() + " " + block.getIndex());
             return false;
         }
         if (!block.getPrevHash().equals(oldBlock.getHash())) {
-            System.err.println("Block hashes are not equal\n" + block.getData());
+            logger.debug("Block hashes are not equal " + block.getData());
             return false;
         }
         if (block.getTimestamp() < oldBlock.getTimestamp()) { //May change it to <= later to slow down process
-            System.err.println("Block timestamp is invalid\n" + block.getData());
+            logger.debug("Block timestamp is invalid " + block.getData());
             return false;
         }
 
@@ -159,9 +163,8 @@ public class Blockchain {
             stringBuilder.append("0");
         }
 
-       String binary = BinaryTable.INSTANCE.getBinaryString(hash);
+        String binary = BinaryTable.INSTANCE.getBinaryString(hash);
 
-        //System.out.println(hash);
         return binary.startsWith(stringBuilder.toString());
     }
 
@@ -202,6 +205,9 @@ public class Blockchain {
 
         long timeExpected = DIFF_ADJUST_INTERVAL * BLOCK_GEN_INTERVAL; //How long it should take to generate x blocks
         long timeTaken = chain.getLast().getTimestamp() - lastChange.getTimestamp(); //The actual time it took
+
+        logger.debug("Time taken for getting blocks: " + timeTaken);
+        logger.debug("Time it should have taken: " + timeExpected);
 
         //TODO: make values configurable
         if (timeTaken > timeExpected * 2)

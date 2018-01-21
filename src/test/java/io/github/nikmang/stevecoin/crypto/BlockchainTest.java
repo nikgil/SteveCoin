@@ -1,5 +1,7 @@
 package io.github.nikmang.stevecoin.crypto;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,10 +14,12 @@ import java.util.Deque;
 public class BlockchainTest {
 
     private static Blockchain chain;
+    private static Logger logger;
 
     @BeforeClass
     public static void createChain() {
         chain = new Blockchain();
+        logger = LogManager.getRootLogger();
     }
 
     @Test
@@ -34,11 +38,11 @@ public class BlockchainTest {
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid hash
-        test = new Block(valid.getIndex()+1, valid.getTimestamp(), "1"+valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), valid.getTimestamp(), "1"+valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid timestamp
-        test = new Block(valid.getIndex()+1, chain.getChain().getLast().getTimestamp(), "1"+valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), chain.getChain().getLast().getTimestamp()-1, valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
         Assert.assertFalse(chain.addBlockToChain(test));
     }
 
@@ -57,7 +61,7 @@ public class BlockchainTest {
             chain.addBlockToChain(chain.generateNextBlock("Block #" + chain.getChain().size()));
         }
 
-        System.out.println("Latest difficulty: " + chain.getChain().getLast().getDifficulty());
+        logger.debug("Latest difficulty: " + chain.getChain().getLast().getDifficulty());
         Assert.assertEquals(chain.getDifficulty(), chain.getChain().getLast().getDifficulty());
     }
 
