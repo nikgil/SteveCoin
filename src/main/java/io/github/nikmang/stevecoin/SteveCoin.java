@@ -17,10 +17,32 @@
  */
 package io.github.nikmang.stevecoin;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Main Spigot class.
  */
-public class SteveCoin extends JavaPlugin{
+public class SteveCoin extends JavaPlugin {
+
+    @Override
+    public void onEnable() {
+        //Make a datafolder
+        if (!this.getDataFolder().exists()) {
+            if (!this.getDataFolder().mkdirs()) {
+                Bukkit.getLogger().warning("Could not create main plugin folder. Need to do so manually");
+            }
+        }
+
+        this.getConfig().options().copyDefaults(true);
+        this.saveDefaultConfig();
+
+        boolean debug = this.getConfig().getBoolean("debug");
+
+        if (!debug) {
+            Configurator.setRootLevel(Level.INFO);
+        }
+    }
 }

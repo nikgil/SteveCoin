@@ -1,0 +1,3 @@
+debug: true
+block_gen_interval: 10 # how many seconds it should take to mine a block
+diff_adjust_interval: 10 # after how many blocks should the difficulty be adjusted
