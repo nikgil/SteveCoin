@@ -1,5 +1,7 @@
 package io.github.nikmang.stevecoin.crypto;
 
+import io.github.nikmang.stevecoin.utils.BinaryTable;
+
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -9,8 +11,8 @@ import java.util.LinkedList;
  */
 public class Blockchain {
 
-    //TODO: make these config values
-    private static final int BLOCK_GEN_INTERVAL = 10; //After how many **seconds** should a block be found
+    //TODO: make these config values. Increase minimum tolerance of diff_adjust and decrease block gen speed requirement
+    private static final int BLOCK_GEN_INTERVAL = 10 * 1000; //After how many **seconds** should a block be found
     private static final int DIFF_ADJUST_INTERVAL = 10; //After how many blocks should difficulty be adjusted
 
     private Deque<Block> chain;
@@ -42,7 +44,7 @@ public class Blockchain {
      */
     public boolean addBlockToChain(Block b) {
         if (isValidBlock(b, chain.getLast())) {
-            chain.push(b);
+            chain.addLast(b);
             return true;
         }
 
@@ -66,7 +68,7 @@ public class Blockchain {
             System.err.println("Block hashes are not equal\n" + block.getData());
             return false;
         }
-        if(block.getTimestamp() <= oldBlock.getTimestamp()) {
+        if (block.getTimestamp() < oldBlock.getTimestamp()) { //May change it to <= later to slow down process
             System.err.println("Block timestamp is invalid\n" + block.getData());
             return false;
         }
@@ -122,15 +124,15 @@ public class Blockchain {
      * Does not automatically add it to the existing chain.
      *
      * @param data Data to be put inside the block.
-     *
      * @return Newly found block with data specified.
      */
     public Block generateNextBlock(String data) {
-      int difficulty = getDifficulty();
-      int index = chain.getLast().getIndex()+1;
-      long timeStamp = System.currentTimeMillis();
+        int difficulty = getDifficulty();
+        int index = chain.getLast().getIndex() + 1;
 
-      return findBlock(index, timeStamp, chain.getLast().getHash(), data, difficulty);
+        long timeStamp = System.currentTimeMillis();
+
+        return findBlock(index, timeStamp, chain.getLast().getHash(), data, difficulty);
     }
 
     /**
@@ -147,38 +149,42 @@ public class Blockchain {
      * Check if hash has correct difficulty attached to it.
      *
      * @param difficulty The difficulty of the block
-     * @param hash The hash that is used in a potential block
-     *
+     * @param hash       The hash that is used in a potential block
      * @return <b>true</b> if hash has applicable difficulty attached to it.
      */
     public static boolean hasMatchingDifficulty(int difficulty, String hash) {
-        byte[] binary = hash.getBytes();
+        StringBuilder stringBuilder = new StringBuilder();
 
-        return difficulty - 1 < binary.length && binary[difficulty - 1] == 0;
+        for (int i = 0; i < difficulty; i++) {
+            stringBuilder.append("0");
+        }
+
+       String binary = BinaryTable.INSTANCE.getBinaryString(hash);
+
+        //System.out.println(hash);
+        return binary.startsWith(stringBuilder.toString());
     }
 
     /**
      * Finds a new block with given difficulty.
      *
-     * @param index The index of new block.
-     * @param timestamp The timestamp for the block.
-     * @param prevHash The hash of the last valid block in the chain.
-     * @param data The data that will be within the block.
+     * @param index      The index of new block.
+     * @param timestamp  The timestamp for the block.
+     * @param prevHash   The hash of the last valid block in the chain.
+     * @param data       The data that will be within the block.
      * @param difficulty The difficulty attached to the block.
-     *
      * @return The newly created block.
      */
     private static Block findBlock(int index, long timestamp, String prevHash, String data, int difficulty) {
         int nonce = 0;
 
         //TODO: possibly make this x times to prevent server overload
-        while(true) {
+        while (true) {
             Block block = new Block(index, timestamp, prevHash, data, difficulty, nonce);
 
-            if(hasMatchingDifficulty(difficulty, block.getHash())) {
+            if (hasMatchingDifficulty(difficulty, block.getHash())) {
                 return block;
             }
-
             nonce++;
         }
     }
@@ -192,16 +198,16 @@ public class Blockchain {
      */
     private int getNewDifficulty() {
         Block[] temp = chain.toArray(new Block[chain.size()]);
-        Block lastChange = temp[temp.length-DIFF_ADJUST_INTERVAL];
+        Block lastChange = temp[temp.length - DIFF_ADJUST_INTERVAL];
 
-        long timeExpected = DIFF_ADJUST_INTERVAL*BLOCK_GEN_INTERVAL; //How long it should take to generate x blocks
+        long timeExpected = DIFF_ADJUST_INTERVAL * BLOCK_GEN_INTERVAL; //How long it should take to generate x blocks
         long timeTaken = chain.getLast().getTimestamp() - lastChange.getTimestamp(); //The actual time it took
 
         //TODO: make values configurable
-        if(timeTaken < timeExpected/2)
-            return chain.getLast().getDifficulty()-1;
-        else if(timeTaken > timeExpected*2)
-            return chain.getLast().getDifficulty()+1;
+        if (timeTaken > timeExpected * 2)
+            return chain.getLast().getDifficulty() > 0 ? chain.getLast().getDifficulty() - 1 : 0;
+        else if (timeTaken < timeExpected / 2)
+            return chain.getLast().getDifficulty() + 1;
 
         return chain.getLast().getDifficulty();
     }
@@ -215,8 +221,9 @@ public class Blockchain {
     public int getDifficulty() {
         Block last = chain.getLast();
 
-        if(last.getIndex() > 0 && last.getIndex()%DIFF_ADJUST_INTERVAL==0)
+        if (last.getIndex() > 0 && last.getIndex() % DIFF_ADJUST_INTERVAL == 0) {
             return getNewDifficulty();
+        }
 
         return last.getDifficulty();
     }

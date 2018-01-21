@@ -12,7 +12,7 @@ public enum BinaryTable {
     INSTANCE;
 
     private Map<Character, String> lookupTable;
-    
+
     BinaryTable() {
         lookupTable = new HashMap<>();
 
