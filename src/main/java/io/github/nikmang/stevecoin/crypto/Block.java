@@ -16,7 +16,8 @@ public class Block {
     private long timestamp;
     private String data;
 
-    private int difficulty, nonce;
+    private int difficulty;
+    private long nonce;
 
     /**
      * Constructor for a block. Timestamp is the moment of constructor call.
@@ -28,7 +29,7 @@ public class Block {
      * @param difficulty The difficulty to mine set block.
      * @param nonce      non-reusable number that is used to prevent replay attacks.
      */
-    public Block(int index, long timestamp, String prevHash, String data, int difficulty, int nonce) {
+    public Block(int index, long timestamp, String prevHash, String data, int difficulty, long nonce) {
         assert prevHash != null && data != null;
 
         this.prevHash = prevHash;
@@ -73,7 +74,7 @@ public class Block {
         return difficulty;
     }
 
-    public int getNonce() {
+    public long getNonce() {
         return nonce;
     }
 
