@@ -9,6 +9,10 @@ import java.util.LinkedList;
  */
 public class Blockchain {
 
+    //TODO: make these config values
+    private static final int BLOCK_GEN_INTERVAL = 10; //After how many **seconds** should a block be found
+    private static final int DIFF_ADJUST_INTERVAL = 10; //After how many blocks should difficulty be adjusted
+
     private Deque<Block> chain;
 
     /**
@@ -62,9 +66,13 @@ public class Blockchain {
             System.err.println("Block hashes are not equal\n" + block.getData());
             return false;
         }
+        if(block.getTimestamp() <= oldBlock.getTimestamp()) {
+            System.err.println("Block timestamp is invalid\n" + block.getData());
+            return false;
+        }
 
         //The default tutorial checks for correct hash but since I do it inside the constructor, it is not required.
-        return true;
+        return hasMatchingDifficulty(block.getDifficulty(), block.getHash());
     }
 
     /**
@@ -101,11 +109,115 @@ public class Blockchain {
         if (!isValidChain(chain))
             return false;
 
-        if (chain.size() <= this.chain.size()) {
+        if (getTotalDifficulty(chain) <= getTotalDifficulty(this.chain)) {
             return false;
         }
 
         this.chain = new LinkedList<>(chain); //This is so it cannot be manipulated after with an existing reference
         return true;
+    }
+
+    /**
+     * Generates a new block based on current chain.
+     * Does not automatically add it to the existing chain.
+     *
+     * @param data Data to be put inside the block.
+     *
+     * @return Newly found block with data specified.
+     */
+    public Block generateNextBlock(String data) {
+      int difficulty = getDifficulty();
+      int index = chain.getLast().getIndex()+1;
+      long timeStamp = System.currentTimeMillis();
+
+      return findBlock(index, timeStamp, chain.getLast().getHash(), data, difficulty);
+    }
+
+    /**
+     * Get the total difficulty of generating all of the blocks.
+     * Done through the formula 2^0 + 2^1 + ... + 2^(n-1) with n being size of chain.
+     *
+     * @return Total difficulty in getting all blocks.
+     */
+    private static double getTotalDifficulty(Deque<Block> chain) {
+        return chain.stream().mapToInt(Block::getDifficulty).mapToDouble(diff -> Math.pow(2, diff)).sum();
+    }
+
+    /**
+     * Check if hash has correct difficulty attached to it.
+     *
+     * @param difficulty The difficulty of the block
+     * @param hash The hash that is used in a potential block
+     *
+     * @return <b>true</b> if hash has applicable difficulty attached to it.
+     */
+    public static boolean hasMatchingDifficulty(int difficulty, String hash) {
+        byte[] binary = hash.getBytes();
+
+        return difficulty - 1 < binary.length && binary[difficulty - 1] == 0;
+    }
+
+    /**
+     * Finds a new block with given difficulty.
+     *
+     * @param index The index of new block.
+     * @param timestamp The timestamp for the block.
+     * @param prevHash The hash of the last valid block in the chain.
+     * @param data The data that will be within the block.
+     * @param difficulty The difficulty attached to the block.
+     *
+     * @return The newly created block.
+     */
+    private static Block findBlock(int index, long timestamp, String prevHash, String data, int difficulty) {
+        int nonce = 0;
+
+        //TODO: possibly make this x times to prevent server overload
+        while(true) {
+            Block block = new Block(index, timestamp, prevHash, data, difficulty, nonce);
+
+            if(hasMatchingDifficulty(difficulty, block.getHash())) {
+                return block;
+            }
+
+            nonce++;
+        }
+    }
+
+    /**
+     * Get a new difficulty for mining blocks.
+     * Difficulty is based on configurable adjustment interval multiplied by average time to find block.
+     * <i>Example: if adjustment interval set to 10 and time to mine blocks set to 20, it should take 200 seconds to mine all.</i>
+     *
+     * @return New difficulty based on result of mining efficiency.
+     */
+    private int getNewDifficulty() {
+        Block[] temp = chain.toArray(new Block[chain.size()]);
+        Block lastChange = temp[temp.length-DIFF_ADJUST_INTERVAL];
+
+        long timeExpected = DIFF_ADJUST_INTERVAL*BLOCK_GEN_INTERVAL; //How long it should take to generate x blocks
+        long timeTaken = chain.getLast().getTimestamp() - lastChange.getTimestamp(); //The actual time it took
+
+        //TODO: make values configurable
+        if(timeTaken < timeExpected/2)
+            return chain.getLast().getDifficulty()-1;
+        else if(timeTaken > timeExpected*2)
+            return chain.getLast().getDifficulty()+1;
+
+        return chain.getLast().getDifficulty();
+    }
+
+    /**
+     * Gets the difficulty for the next block.
+     * If time interval not exceeded will return the difficulty of the last block.
+     *
+     * @return Difficulty for new block.
+     */
+    public int getDifficulty() {
+        Block last = chain.getLast();
+
+        if(last.getIndex() > 0 && last.getIndex()%DIFF_ADJUST_INTERVAL==0)
+            return getNewDifficulty();
+
+        return last.getDifficulty();
     }
 }

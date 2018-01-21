@@ -9,29 +9,42 @@ import java.nio.charset.StandardCharsets;
  */
 public class Block {
 
-    public static final Block GENESIS_BLOCK = new Block(0, "", "Hello World");
+    public static final Block GENESIS_BLOCK = new Block(0, System.currentTimeMillis(), "", "Hello World", 0, 0);
 
     private int index;
     private String hash, prevHash; //TODO: delete prevHash if unused
     private long timestamp;
     private String data;
 
+    private int difficulty, nonce;
+
     /**
      * Constructor for a block. Timestamp is the moment of constructor call.
      *
-     * @param index    The index of the block.
-     * @param prevHash Previous block's hash. Done in SHA256.
-     * @param data     The data incorporated within the block.
+     * @param index      The index of the block.
+     * @param timestamp  The timestamp of creation of the block.
+     * @param prevHash   Previous block's hash. Done in SHA256.
+     * @param data       The data incorporated within the block.
+     * @param difficulty The difficulty to mine set block.
+     * @param nonce      non-reusable number that is used to prevent replay attacks.
      */
-    public Block(int index, String prevHash, String data) {
+    public Block(int index, long timestamp, String prevHash, String data, int difficulty, int nonce) {
         assert prevHash != null && data != null;
 
         this.prevHash = prevHash;
         this.index = index;
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = timestamp;
         this.data = data;
 
+        this.difficulty = difficulty;
+        this.nonce = nonce;
+
         this.hash = genHash();
+    }
+
+    //Creates the hash for the block
+    private String genHash() {
+        return Hashing.sha256().hashString(index + prevHash + timestamp + data + difficulty + nonce, StandardCharsets.UTF_8).toString();
     }
 
     // Getters //
@@ -56,14 +69,17 @@ public class Block {
         return data;
     }
 
-    //Creates the hash for the block
-    private String genHash() {
-        return Hashing.sha256().hashString(index + prevHash + timestamp + data, StandardCharsets.UTF_8).toString();
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public int getNonce() {
+        return nonce;
     }
 
     @Override
     public boolean equals(Object o) {
-        if(!(o instanceof Block))
+        if (!(o instanceof Block))
             return false;
 
         Block b = (Block) o;
