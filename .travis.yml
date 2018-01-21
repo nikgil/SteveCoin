@@ -3,6 +3,12 @@ language: java
 jdk:
     - oraclejdk8
     - openjdk8
-script: "mvn cobertura:cobertura"
+script: "mvn cobertura:cobertura install"
 after_success:
     - bash <(curl -s https://codecov.io/bash)
+deploy:
+  provider: bintray
+  file: "descriptor.json"
+  user: nikmanG
+  key:
+    secure: B+Qij7Rm3P4LCYjghhivJn6GT3wz1M21rn0OW8iiEGRZBqabgjeGciMSpiOVtMxaOYyw9mS97KLR8cBYkFK69SXY6Opal1UM+O9QWJwURI7plUB3DWMi+8VASyRwuvYvAOYWdzQTDRXujgocfvGpbaiOfJLUAxR1DFPNoAew8XffRfGV03VZmogJgkuqUCyDa4lFG7wOtBZfrDaoFnE8TAOgKYI7jTmGIMtcAxfrc21rPVTe9Fwmlm+drD/yPtg077HTLHSUurKRpIb5Wtbj6GVvtN5xiiR1DFwqE3VpiyxMFHvWuQIIW1kp5djQkBmO1PWYjHwNVh7pLf+GG/uraUi7cqLXmCkDdfr6wbDsK0lh0gOEd5Vv085wNThwxzPiG2F86QscfOg6RkUzIpwcxnqhE6qu/iYOjdl9I2ebx/6+eF+UgX7qQLVrdf53xMo/f7mvR74110msTbiY0EMd9m4e7Ct4BWZWa1T5ePCL76f4cwOMPNiYclve7g8tYYDOrhnrTR1bt16UEe96kS1VPvqU54qsqL3OBldwF8bsMCr9pyohXjVbv8D6AAv4dRB9ZRNnjDaoG8yZYmPN+5l0/sISxawW9NDMsnZYCOhw7aqwsbCH5SM3PRzHAE5A61w297pmarmeAwdW96pmptIu78ZGKi26Yzo+sE5WIN6Y2Is=
