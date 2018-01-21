@@ -22,7 +22,7 @@
 
   "files":
   [
-    {"includePattern": "target/SteveCoin-*.jar", "excludePattern": "target/.*", "uploadPattern": "/$1"}
+    {"includePattern": "target/SteveCoin-(.*).jar", "excludePattern": "target/.*", "uploadPattern": "/$1"}
   ],
   "publish": false
 }
