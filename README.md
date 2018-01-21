@@ -2,6 +2,7 @@
 [![codecov](https://codecov.io/gh/nikmanG/SteveCoin/branch/master/graph/badge.svg)](https://codecov.io/gh/nikmanG/SteveCoin)
 [![Download](https://api.bintray.com/packages/nikmang/nik-plugins/stevecoin/images/download.svg)](https://bintray.com/nikmang/nik-plugins/stevecoin/_latestVersion)
 [![Minecraft Versions](https://img.shields.io/badge/Minecraft%20Versions-1.12.2-orange.svg)](https://minecraft.net)
+[![Javadocs](https://img.shields.io/badge/Javadocs-0.0.2-orange.svg)](https://nikmang.github.io/SteveCoin/index.html)
 
 # What this project is **NOT**
 Rather than explain what this project is about (and it is below), I'll start with briefly saying what it isn't.
