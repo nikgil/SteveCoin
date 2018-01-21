@@ -14,7 +14,7 @@
   },
 
   "version": {
-    "name": "0.1",
+    "name": "0.0.2-SNAPSHOT",
     "desc": "Initial version. Will not run on servers properly.",
     "released": "2018-01-21",
     "gpgSign": false
@@ -22,7 +22,7 @@
 
   "files":
   [
-    {"uploadPattern": "/$1"}
+    {"includePattern": "target/(.*)", "excludePattern": "target/.*.zip$", "uploadPattern": "/$1"}
   ],
   "publish": true
 }

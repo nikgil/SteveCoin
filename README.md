@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/nikmanG/SteveCoin.svg?branch=master)](https://travis-ci.org/nikmanG/SteveCoin)
 [![codecov](https://codecov.io/gh/nikmanG/SteveCoin/branch/master/graph/badge.svg)](https://codecov.io/gh/nikmanG/SteveCoin)
+[![Download](https://api.bintray.com/packages/nikmang/nik-plugins/stevecoin/images/download.svg)](https://bintray.com/nikmang/nik-plugins/stevecoin/_latestVersion)
 [![Minecraft Versions](https://img.shields.io/badge/Minecraft%20Versions-1.12.2-orange.svg)](https://minecraft.net)
 
 # What this project is **NOT**
