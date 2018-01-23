@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This table is for plugin use only, to speed up block creation.
- * The values are skewed to favour block creation so actual binary results will differ.
+ * This table is for plugin use only, to speed up block creation.<br>
+ * The values are skewed to favour block creation so actual binary results will differ.<br>
  * Taken from tutorial source listed in README.md.
  */
 public enum BinaryTable {
