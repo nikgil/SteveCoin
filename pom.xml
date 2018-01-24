@@ -67,7 +67,7 @@
                 </configuration>
             </plugin>
 
-            <!--Shading Log4J2-->
+            <!--Shading Log4J2 & BouncyCastle-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
