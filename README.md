@@ -18,7 +18,7 @@ It has taken my a very long time to undersand the basics of cryptocurrency and w
 to understand through this interactive way. 
 It may also fit some themes of Minecraft servers but I have never seen any crypto-themed servers.
 
-The project as a whole is inspired from [lhartikk's NaiveCoin](https://lhartikk.github.io), from which I work off of.
+The project as a whole is inspired from [lhartikk's NaiveCoin](https://lhartikk.github.io), and [Kass's Blockchain](https://medium.com/programmers-blockchain/create-simple-blockchain-java-tutorial-from-scratch-6eeed3cb03fa) from which I work off of.
 
 # Why am I doing this
 Primarily as a way of learning myself. I understand the very basics of crypto-trading and blockchains and feel this is a great
