@@ -2,17 +2,21 @@ package io.github.nikmang.stevecoin.crypto;
 
 import com.google.common.hash.Hashing;
 import io.github.nikmang.stevecoin.crypto.transactions.Transaction;
+import io.github.nikmang.stevecoin.crypto.transactions.TxOut;
+import io.github.nikmang.stevecoin.utils.CryptoUtils;
+import org.apache.logging.log4j.LogManager;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Individual Block in a blockchain.
  */
 public class Block {
 
-    public static final Block GENESIS_BLOCK = new Block(0, System.currentTimeMillis(), "", 0, 0);
+    public static final Block GENESIS_BLOCK = new Block(0, System.currentTimeMillis(), "");
 
     private int index;
     private String hash, prevHash;
@@ -23,34 +27,83 @@ public class Block {
     private long timestamp;
 
     private int difficulty;
-    private long nonce;
 
     /**
      * Constructor for a block. Timestamp is the moment of constructor call.
      *
-     * @param index      The index of the block.
-     * @param timestamp  The timestamp of creation of the block.
-     * @param prevHash   Previous block's hash. Done in SHA256.
-     * @param difficulty The difficulty to mine set block.
-     * @param nonce      non-reusable number that is used to prevent replay attacks.
+     * @param index     The index of the block.
+     * @param timestamp The timestamp of creation of the block.
+     * @param prevHash  Previous block's hash. Done in SHA256.
      */
-    public Block(int index, long timestamp, String prevHash, int difficulty, long nonce) {
+    public Block(int index, long timestamp, String prevHash) {
         assert prevHash != null;
 
         this.prevHash = prevHash;
         this.index = index;
         this.timestamp = timestamp;
 
-        this.difficulty = difficulty;
-        this.nonce = nonce;
-
-        this.hash = genHash();
+        this.difficulty = -1;
         this.data = new ArrayList<>();
         this.merkleRoot = "";
+        this.hash = genHash(0);
     }
 
-    //Creates the hash for the block
-    private String genHash() {
+    /**
+     * Attempts to find a hash for this block
+     *
+     * @param difficulty The difficulty with which this block is to be mined
+     * @return <b>true</b> when the block is mined.
+     */
+    public boolean mineBlock(int difficulty) {
+        this.merkleRoot = CryptoUtils.INSTANCE.getMerkleRoot(data);
+        this.difficulty = difficulty;
+
+        StringBuilder prefix = new StringBuilder(); //Proof-of-work
+        for (int i = 0; i < difficulty; i++)
+            prefix.append("0");
+
+        int nonce = 0;
+
+        //TODO: possibly make this x times to prevent server overload
+        while (true) {
+            if (CryptoUtils.INSTANCE.getBinaryString(this.hash).startsWith(prefix.toString())) {
+                return true;
+            }
+
+            this.hash = genHash(nonce);
+            nonce++;
+        }
+    }
+
+    /**
+     * Adds a transaction to the block.
+     *
+     * @param unspent Listof all current unspent transactions.
+     * @param t       The transaction to be added.
+     * @return <b>true</b> if transaction was successfully added.
+     */
+    public boolean addTransaction(Map<String, TxOut> unspent, Transaction t) {
+        assert t != null;
+
+        // 0 = genesis transaction
+        if (!t.getID().equals("0")) {
+            if (!t.processTransaction(unspent)) {
+                LogManager.getRootLogger().debug("Invalid funds for transaction");
+                return false;
+            }
+        }
+
+        data.add(t);
+        return true;
+    }
+
+    /**
+     * Generate SHA256 hash string for the block.
+     *
+     * @param nonce The single access digit for this block.
+     * @return SHA256 hashed string.
+     */
+    private String genHash(long nonce) {
         return Hashing.sha256().hashString(index + prevHash + timestamp + merkleRoot + difficulty + nonce, StandardCharsets.UTF_8).toString();
     }
 
@@ -82,10 +135,6 @@ public class Block {
 
     public int getDifficulty() {
         return difficulty;
-    }
-
-    public long getNonce() {
-        return nonce;
     }
 
     public String getMerkleRoot() {

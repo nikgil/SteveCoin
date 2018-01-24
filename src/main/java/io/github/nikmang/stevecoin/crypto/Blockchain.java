@@ -126,17 +126,11 @@ public class Blockchain {
     /**
      * Generates a new block based on current chain.
      * Does not automatically add it to the existing chain.
-     *
-     * @param data Data to be put inside the block.
-     * @return Newly found block with data specified.
      */
-    public Block generateNextBlock(String data) {
-        int difficulty = getDifficulty();
-        int index = chain.getLast().getIndex() + 1;
+    public Block generateNextBlock() {
+        Block b = new Block(chain.size(), System.currentTimeMillis(), chain.getLast().getHash());
 
-        long timeStamp = System.currentTimeMillis();
-
-        return findBlock(index, timeStamp, chain.getLast().getHash(), difficulty);
+        return b;
     }
 
     /**
@@ -150,7 +144,8 @@ public class Blockchain {
     }
 
     /**
-     * Check if hash has correct difficulty attached to it.
+     * Check if hash has correct difficulty attached to it.<br>
+     * This is a utility method for isValidBlock
      *
      * @param difficulty The difficulty of the block
      * @param hash       The hash that is used in a potential block
@@ -166,29 +161,6 @@ public class Blockchain {
         String binary = CryptoUtils.INSTANCE.getBinaryString(hash);
 
         return binary.startsWith(stringBuilder.toString());
-    }
-
-    /**
-     * Finds a new block with given difficulty.
-     *
-     * @param index      The index of new block.
-     * @param timestamp  The timestamp for the block.
-     * @param prevHash   The hash of the last valid block in the chain.
-     * @param difficulty The difficulty attached to the block.
-     * @return The newly created block.
-     */
-    private static Block findBlock(int index, long timestamp, String prevHash, int difficulty) {
-        int nonce = 0;
-
-        //TODO: possibly make this x times to prevent server overload
-        while (true) {
-            Block block = new Block(index, timestamp, prevHash, difficulty, nonce);
-
-            if (hasMatchingDifficulty(difficulty, block.getHash())) {
-                return block;
-            }
-            nonce++;
-        }
     }
 
     /**

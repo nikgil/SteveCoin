@@ -24,25 +24,25 @@ public class BlockchainTest {
 
     @Test
     public void addValidBlock() {
-        Block b = chain.generateNextBlock("test block");
+        Block b = chain.generateNextBlock();
 
         Assert.assertTrue(chain.addBlockToChain(b));
     }
 
     @Test
     public void addInvalidBlocks() {
-        Block valid = chain.generateNextBlock("Test Block"); //Using this for invalid block creation
+        Block valid = chain.generateNextBlock(); //Using this for invalid block creation
 
         //Index is off
-        Block test = new Block(valid.getIndex()+1, valid.getTimestamp(), valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
+        Block test = new Block(valid.getIndex()+1, valid.getTimestamp(), valid.getPrevHash());
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid hash
-        test = new Block(valid.getIndex(), valid.getTimestamp(), "1"+valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), valid.getTimestamp(), "1"+valid.getPrevHash());
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid timestamp
-        test = new Block(valid.getIndex(), chain.getChain().getLast().getTimestamp()-1, valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), chain.getChain().getLast().getTimestamp()-1, valid.getPrevHash());
         Assert.assertFalse(chain.addBlockToChain(test));
     }
 
@@ -58,7 +58,11 @@ public class BlockchainTest {
     @Test
     public void testDifficulty() {
         while(chain.getChain().size() < 100) {
-            chain.addBlockToChain(chain.generateNextBlock("Block #" + chain.getChain().size()));
+            Block b = chain.generateNextBlock();
+
+            if(b.mineBlock(chain.getDifficulty())) {
+                chain.addBlockToChain(b);
+            }
         }
 
         logger.debug("Latest difficulty: " + chain.getChain().getLast().getDifficulty());
@@ -68,7 +72,7 @@ public class BlockchainTest {
     @Test
     public void replaceSuccessfulChain() {
         Deque<Block> list = chain.getChain();
-        list.add(chain.generateNextBlock("Test Block 2"));
+        list.add(chain.generateNextBlock());
 
         Assert.assertTrue(chain.replaceChain(list));
 
