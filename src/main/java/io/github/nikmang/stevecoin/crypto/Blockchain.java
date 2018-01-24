@@ -1,11 +1,14 @@
 package io.github.nikmang.stevecoin.crypto;
 
-import io.github.nikmang.stevecoin.utils.BinaryTable;
+import io.github.nikmang.stevecoin.crypto.transactions.TxOut;
+import io.github.nikmang.stevecoin.utils.CryptoUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * The blockchain that contains all blocks.
@@ -20,12 +23,14 @@ public class Blockchain {
     private static Logger logger = LogManager.getRootLogger();
 
     private Deque<Block> chain;
+    private Map<String, TxOut> uTxO;
 
     /**
      * Constructor for blockchain.
      * Initializes chain with a single genesis block created.
      */
     public Blockchain() {
+        this.uTxO = new HashMap<>();
         this.chain = new LinkedList<>();
         this.chain.addFirst(Block.GENESIS_BLOCK);
     }
@@ -56,53 +61,6 @@ public class Blockchain {
     }
 
     /**
-     * Validate a block before addition.
-     * O(1) run time.
-     *
-     * @param block    The block to be validated.
-     * @param oldBlock The newest block in the chain that is established.
-     * @return <b>true</b> if block is valid.
-     */
-    private static boolean isValidBlock(Block block, Block oldBlock) {
-        if (block.getIndex() != oldBlock.getIndex() + 1) {
-            logger.debug("Block index is invalid " + block.getData() + " " + block.getIndex());
-            return false;
-        }
-        if (!block.getPrevHash().equals(oldBlock.getHash())) {
-            logger.debug("Block hashes are not equal " + block.getData());
-            return false;
-        }
-        if (block.getTimestamp() < oldBlock.getTimestamp()) { //May change it to <= later to slow down process
-            logger.debug("Block timestamp is invalid " + block.getData());
-            return false;
-        }
-
-        //The default tutorial checks for correct hash but since I do it inside the constructor, it is not required.
-        return hasMatchingDifficulty(block.getDifficulty(), block.getHash());
-    }
-
-    /**
-     * Validates a full blockchain.
-     * Runtime is O(n) length of chain.
-     *
-     * @param chain Blockchain to be validated.
-     * @return <b>true</b> if chain has valid blocks, and is validly created.
-     */
-    private static boolean isValidChain(Deque<Block> chain) {
-        if (!chain.getFirst().equals(Block.GENESIS_BLOCK))
-            return false;
-
-        Block[] tempArr = chain.toArray(new Block[chain.size()]);
-
-        for (int i = 1; i < tempArr.length; i++) {
-            if (!isValidBlock(tempArr[i], tempArr[i - 1]))
-                return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Atempts to replace the current blockchain with the newer one.
      * New chain validation is done within the method.
      * Runtime O(1) with O(n) validation method.
@@ -121,75 +79,6 @@ public class Blockchain {
 
         this.chain = new LinkedList<>(chain); //This is so it cannot be manipulated after with an existing reference
         return true;
-    }
-
-    /**
-     * Generates a new block based on current chain.
-     * Does not automatically add it to the existing chain.
-     *
-     * @param data Data to be put inside the block.
-     * @return Newly found block with data specified.
-     */
-    public Block generateNextBlock(String data) {
-        int difficulty = getDifficulty();
-        int index = chain.getLast().getIndex() + 1;
-
-        long timeStamp = System.currentTimeMillis();
-
-        return findBlock(index, timeStamp, chain.getLast().getHash(), data, difficulty);
-    }
-
-    /**
-     * Get the total difficulty of generating all of the blocks.
-     * Done through the formula 2^0 + 2^1 + ... + 2^(n-1) with n being size of chain.
-     *
-     * @return Total difficulty in getting all blocks.
-     */
-    private static double getTotalDifficulty(Deque<Block> chain) {
-        return chain.stream().mapToInt(Block::getDifficulty).mapToDouble(diff -> Math.pow(2, diff)).sum();
-    }
-
-    /**
-     * Check if hash has correct difficulty attached to it.
-     *
-     * @param difficulty The difficulty of the block
-     * @param hash       The hash that is used in a potential block
-     * @return <b>true</b> if hash has applicable difficulty attached to it.
-     */
-    public static boolean hasMatchingDifficulty(int difficulty, String hash) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 0; i < difficulty; i++) {
-            stringBuilder.append("0");
-        }
-
-        String binary = BinaryTable.INSTANCE.getBinaryString(hash);
-
-        return binary.startsWith(stringBuilder.toString());
-    }
-
-    /**
-     * Finds a new block with given difficulty.
-     *
-     * @param index      The index of new block.
-     * @param timestamp  The timestamp for the block.
-     * @param prevHash   The hash of the last valid block in the chain.
-     * @param data       The data that will be within the block.
-     * @param difficulty The difficulty attached to the block.
-     * @return The newly created block.
-     */
-    private static Block findBlock(int index, long timestamp, String prevHash, String data, int difficulty) {
-        int nonce = 0;
-
-        //TODO: possibly make this x times to prevent server overload
-        while (true) {
-            Block block = new Block(index, timestamp, prevHash, data, difficulty, nonce);
-
-            if (hasMatchingDifficulty(difficulty, block.getHash())) {
-                return block;
-            }
-            nonce++;
-        }
     }
 
     /**
@@ -232,5 +121,120 @@ public class Blockchain {
         }
 
         return last.getDifficulty();
+    }
+
+    /**
+     * Generates a new block based on current chain.
+     * Does not automatically add it to the existing chain.
+     *
+     * @param data Data to be put inside the block.
+     * @return Newly found block with data specified.
+     */
+    public Block generateNextBlock(String data) {
+        int difficulty = getDifficulty();
+        int index = chain.getLast().getIndex() + 1;
+
+        long timeStamp = System.currentTimeMillis();
+
+        return findBlock(index, timeStamp, chain.getLast().getHash(), difficulty);
+    }
+
+    /**
+     * Get the total difficulty of generating all of the blocks.
+     * Done through the formula 2^0 + 2^1 + ... + 2^(n-1) with n being size of chain.
+     *
+     * @return Total difficulty in getting all blocks.
+     */
+    private static double getTotalDifficulty(Deque<Block> chain) {
+        return chain.stream().mapToInt(Block::getDifficulty).mapToDouble(diff -> Math.pow(2, diff)).sum();
+    }
+
+    /**
+     * Check if hash has correct difficulty attached to it.
+     *
+     * @param difficulty The difficulty of the block
+     * @param hash       The hash that is used in a potential block
+     * @return <b>true</b> if hash has applicable difficulty attached to it.
+     */
+    public static boolean hasMatchingDifficulty(int difficulty, String hash) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < difficulty; i++) {
+            stringBuilder.append("0");
+        }
+
+        String binary = CryptoUtils.INSTANCE.getBinaryString(hash);
+
+        return binary.startsWith(stringBuilder.toString());
+    }
+
+    /**
+     * Finds a new block with given difficulty.
+     *
+     * @param index      The index of new block.
+     * @param timestamp  The timestamp for the block.
+     * @param prevHash   The hash of the last valid block in the chain.
+     * @param difficulty The difficulty attached to the block.
+     * @return The newly created block.
+     */
+    private static Block findBlock(int index, long timestamp, String prevHash, int difficulty) {
+        int nonce = 0;
+
+        //TODO: possibly make this x times to prevent server overload
+        while (true) {
+            Block block = new Block(index, timestamp, prevHash, difficulty, nonce);
+
+            if (hasMatchingDifficulty(difficulty, block.getHash())) {
+                return block;
+            }
+            nonce++;
+        }
+    }
+
+    /**
+     * Validate a block before addition.
+     * O(1) run time.
+     *
+     * @param block    The block to be validated.
+     * @param oldBlock The newest block in the chain that is established.
+     * @return <b>true</b> if block is valid.
+     */
+    private static boolean isValidBlock(Block block, Block oldBlock) {
+        if (block.getIndex() != oldBlock.getIndex() + 1) {
+            logger.debug("Block index is invalid " + block.getMerkleRoot() + " " + block.getIndex());
+            return false;
+        }
+        if (!block.getPrevHash().equals(oldBlock.getHash())) {
+            logger.debug("Block hashes are not equal " + block.getMerkleRoot());
+            return false;
+        }
+        if (block.getTimestamp() < oldBlock.getTimestamp()) { //May change it to <= later to slow down process
+            logger.debug("Block timestamp is invalid " + block.getMerkleRoot());
+            return false;
+        }
+
+        //The default tutorial checks for correct hash but since I do it inside the constructor, it is not required.
+        return hasMatchingDifficulty(block.getDifficulty(), block.getHash());
+    }
+
+    /**
+     * Validates a full blockchain.
+     * Runtime is O(n) length of chain.
+     *
+     * @param chain Blockchain to be validated.
+     * @return <b>true</b> if chain has valid blocks, and is validly created.
+     */
+    private static boolean isValidChain(Deque<Block> chain) {
+        if (!chain.getFirst().equals(Block.GENESIS_BLOCK))
+            return false;
+
+        Block[] tempArr = chain.toArray(new Block[chain.size()]);
+
+        for (int i = 1; i < tempArr.length; i++) {
+            if (!isValidBlock(tempArr[i], tempArr[i - 1]))
+                return false;
+        }
+
+        return true;
     }
 }
