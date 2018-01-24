@@ -34,15 +34,15 @@ public class BlockchainTest {
         Block valid = chain.generateNextBlock("Test Block"); //Using this for invalid block creation
 
         //Index is off
-        Block test = new Block(valid.getIndex()+1, valid.getTimestamp(), valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
+        Block test = new Block(valid.getIndex()+1, valid.getTimestamp(), valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid hash
-        test = new Block(valid.getIndex(), valid.getTimestamp(), "1"+valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), valid.getTimestamp(), "1"+valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
         Assert.assertFalse(chain.addBlockToChain(test));
 
         //Invalid timestamp
-        test = new Block(valid.getIndex(), chain.getChain().getLast().getTimestamp()-1, valid.getPrevHash(), valid.getData(), valid.getDifficulty(), valid.getNonce());
+        test = new Block(valid.getIndex(), chain.getChain().getLast().getTimestamp()-1, valid.getPrevHash(), valid.getDifficulty(), valid.getNonce());
         Assert.assertFalse(chain.addBlockToChain(test));
     }
 

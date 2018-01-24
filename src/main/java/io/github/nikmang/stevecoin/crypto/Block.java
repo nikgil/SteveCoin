@@ -35,7 +35,7 @@ public class Block {
      * @param nonce      non-reusable number that is used to prevent replay attacks.
      */
     public Block(int index, long timestamp, String prevHash, int difficulty, long nonce) {
-        assert prevHash != null && data != null;
+        assert prevHash != null;
 
         this.prevHash = prevHash;
         this.index = index;
