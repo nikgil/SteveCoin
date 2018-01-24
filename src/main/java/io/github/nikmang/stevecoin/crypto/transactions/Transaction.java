@@ -33,6 +33,7 @@ public class Transaction {
 
     static {
         sequence = 0;
+        minimumTransaction = 0.0000001f;
     }
 
     public Transaction(PublicKey sender, PublicKey receiver, double value, List<TxIn> inputs) {
@@ -137,7 +138,7 @@ public class Transaction {
         sequence++;
 
         return Hashing.sha256().hashString(Base64.getEncoder().encodeToString(sender.getEncoded()) +
-                Base64.getEncoder().encodeToString(receiver.getEncoded()) + value, StandardCharsets.UTF_8).toString();
+                Base64.getEncoder().encodeToString(receiver.getEncoded()) + value + sequence, StandardCharsets.UTF_8).toString();
     }
 
     private double getInputValue() {
