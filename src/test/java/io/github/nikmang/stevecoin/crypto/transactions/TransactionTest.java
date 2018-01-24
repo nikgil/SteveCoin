@@ -55,14 +55,17 @@ public class TransactionTest {
         TxOut txOut = new TxOut(genesis.getReceiver(), genesis.getValue(), genesis.getID());
 
         genesis.setOutput(txOut);
-        blockchain.getUnspentTransactions().put(genesis.getID(), txOut);
+        blockchain.getUnspentTransactions().put(txOut.getID(), txOut);
         Block.GENESIS_BLOCK.getData().add(genesis);
 
         Assert.assertEquals(100, w1.getBalance(blockchain.getUnspentTransactions()), .001); //It should be exactly 100
 
         //simple successful transaction
         Block block1 = new Block(blockchain.getChain().size(), System.currentTimeMillis(), blockchain.getChain().getLast().getHash());
-        boolean success = block1.addTransaction(blockchain.getUnspentTransactions(), w1.sendFunds(blockchain.getUnspentTransactions(), w2.getPublicKey(), 40.5));
+        Transaction t1 = w1.sendFunds(blockchain.getUnspentTransactions(), w2.getPublicKey(), 40.5);
+        Assert.assertTrue(t1 != null);
+
+        boolean success = block1.addTransaction(blockchain.getUnspentTransactions(), t1);
 
         Assert.assertTrue(success);
 
@@ -75,12 +78,12 @@ public class TransactionTest {
 
         //simple failed transaction
         Block block2 = new Block(blockchain.getChain().size(), System.currentTimeMillis(), blockchain.getChain().getLast().getHash());
-        boolean fail = block1.addTransaction(blockchain.getUnspentTransactions(), w1.sendFunds(blockchain.getUnspentTransactions(), w2.getPublicKey(), 1040.5));
+        boolean fail = w1.sendFunds(blockchain.getUnspentTransactions(), w2.getPublicKey(), 1040.5) != null;
 
         Assert.assertFalse(fail);
 
         block2.mineBlock(blockchain.getDifficulty());
-        boolean added2 = blockchain.addBlockToChain(block1);
+        boolean added2 = blockchain.addBlockToChain(block2);
 
         Assert.assertTrue(added2);
         Assert.assertEquals(59.5, w1.getBalance(blockchain.getUnspentTransactions()), .001);
@@ -88,12 +91,12 @@ public class TransactionTest {
 
         //succeeding transaction. Going the other way B -> A
         Block block3 = new Block(blockchain.getChain().size(), System.currentTimeMillis(), blockchain.getChain().getLast().getHash());
-        boolean success2 = block1.addTransaction(blockchain.getUnspentTransactions(), w2.sendFunds(blockchain.getUnspentTransactions(), w1.getPublicKey(), 10.5));
+        boolean success2 = block3.addTransaction(blockchain.getUnspentTransactions(), w2.sendFunds(blockchain.getUnspentTransactions(), w1.getPublicKey(), 10.5));
 
         Assert.assertTrue(success2);
 
         block3.mineBlock(blockchain.getDifficulty());
-        boolean added3 = blockchain.addBlockToChain(block1);
+        boolean added3 = blockchain.addBlockToChain(block3);
 
         Assert.assertTrue(added3);
         Assert.assertEquals(70, w1.getBalance(blockchain.getUnspentTransactions()), .001);

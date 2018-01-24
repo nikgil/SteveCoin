@@ -44,8 +44,4 @@ public class TxOut {
     public double getValue() {
         return value;
     }
-
-    public String getTransactionID() {
-        return transactionID;
-    }
 }

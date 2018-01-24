@@ -20,7 +20,7 @@ public class Transaction {
     //TODO: add transactions into signing process
 
     private static int sequence; //amount of generated transactions
-    private static float minimumTransaction;
+    private static double minimumTransaction;
 
     private String id;
     private PublicKey sender;
@@ -33,7 +33,7 @@ public class Transaction {
 
     static {
         sequence = 0;
-        minimumTransaction = 0.0000001f;
+        minimumTransaction = 0.0000001;
     }
 
     public Transaction(PublicKey sender, PublicKey receiver, double value, List<TxIn> inputs) {

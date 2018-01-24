@@ -1,5 +1,6 @@
 package io.github.nikmang.stevecoin.crypto;
 
+import io.github.nikmang.stevecoin.utils.CryptoUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
@@ -66,6 +67,7 @@ public class BlockchainTest {
         }
 
         logger.debug("Latest difficulty: " + chain.getChain().getLast().getDifficulty());
+        logger.debug(CryptoUtils.INSTANCE.getBinaryString(chain.getChain().getLast().getHash()).substring(0, chain.getChain().getLast().getDifficulty()));
         Assert.assertEquals(chain.getDifficulty(), chain.getChain().getLast().getDifficulty());
     }
 

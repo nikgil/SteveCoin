@@ -53,6 +53,8 @@ public class Wallet {
 
         this.privateKey = pair.getPrivate();
         this.publicKey = pair.getPublic();
+
+        this.uTxOuts = new HashMap<>();
     }
 
     /**
@@ -99,7 +101,7 @@ public class Wallet {
 
         List<TxIn> inputs = new ArrayList<>();
 
-        float total = 0;
+        double total = 0;
 
         for (TxOut out : this.uTxOuts.values()) {
             total += out.getValue();
