@@ -91,7 +91,7 @@ public class Wallet {
      * @param value     Amount of coins to be sent.
      * @return Transaction which is responsible for this coin movement. <b>null</b> if there are insufficient coins.
      */
-    public Transaction sendFunds(Map<String, TxOut> uTxOuts, PublicKey recipient, float value) {
+    public Transaction sendFunds(Map<String, TxOut> uTxOuts, PublicKey recipient, double value) {
         if (getBalance(uTxOuts) < value) {
             LogManager.getRootLogger().debug("Insufficient funds: " + value + " wanted. " + getBalance(uTxOuts) + " in wallet.");
             return null;

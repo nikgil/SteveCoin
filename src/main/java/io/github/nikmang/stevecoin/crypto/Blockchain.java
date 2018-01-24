@@ -45,6 +45,10 @@ public class Blockchain {
         return new LinkedList<>(chain);
     }
 
+    public Map<String, TxOut> getUnspentTransactions() {
+        return uTxO;
+    }
+
     /**
      * Attempts to add a block to the chain.
      *

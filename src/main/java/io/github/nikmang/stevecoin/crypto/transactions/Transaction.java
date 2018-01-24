@@ -47,10 +47,6 @@ public class Transaction {
         this.id = "";
     }
 
-    public String getID() {
-        return id;
-    }
-
     /**
      * Processes a transaction to see if it is valid.
      *
@@ -143,5 +139,35 @@ public class Transaction {
 
     private double getInputValue() {
         return this.inputs.stream().filter(txIn -> txIn.getTxOut() != null).mapToDouble(txIn -> txIn.getTxOut().getValue()).sum();
+    }
+
+    // Getters //
+    public String getID() {
+        return id;
+    }
+
+    public PublicKey getReceiver() {
+        return receiver;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    //Genesis block stuff
+    /**
+     * Sets the block to a genesis block.
+     */
+    public void setGenesis() {
+        this.id = "0";
+    }
+
+    /**
+     * Manually add a new output transaction.
+     *
+     * @param txOut Output transaction.
+     */
+    public void setOutput(TxOut txOut) {
+        this.outputs.add(txOut);
     }
 }
