@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/nikmanG/SteveCoin/branch/master/graph/badge.svg)](https://codecov.io/gh/nikmanG/SteveCoin)
 [![Download](https://api.bintray.com/packages/nikmang/nik-plugins/stevecoin/images/download.svg)](https://bintray.com/nikmang/nik-plugins/stevecoin/_latestVersion)
 [![Minecraft Versions](https://img.shields.io/badge/Minecraft%20Versions-1.12.2-orange.svg)](https://minecraft.net)
-[![Javadocs](https://img.shields.io/badge/Javadocs-0.0.2-orange.svg)](https://nikmang.github.io/SteveCoin/index.html)
+[![Javadocs](https://img.shields.io/badge/Javadocs-0.0.3-orange.svg)](https://nikmang.github.io/SteveCoin/index.html)
 
 # What this project is **NOT**
 Rather than explain what this project is about (and it is below), I'll start with briefly saying what it isn't.
@@ -26,3 +26,8 @@ project to develop my knowledge further.
 Also many of the accessories I use in this (Travis CI, Bintray, Codecov) are novel to me and I am learning them through this project.
 
 What I hope to accomplish in the end is a simulator for cryptocoins, with possible (and this is far fetched) ability to convert this between servers over BungeeCord.
+
+# Current state of plugin
+Right now (version 0.0.3) the plugin has the workings of a very simplistic blockchain coin. It is integrated with Vault but does not contain any workings to actually function as a plugin.
+This means there are no commands, listeners or other gameplay features.
+The plugin does not possess multi-world or multi-server (bungeecord) support.
