@@ -17,18 +17,33 @@
  */
 package io.github.nikmang.stevecoin;
 
+import io.github.nikmang.stevecoin.crypto.Blockchain;
+import io.github.nikmang.stevecoin.crypto.Wallet;
+import net.milkbowl.vault.economy.Economy;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Main Spigot class.
  */
 public class SteveCoin extends JavaPlugin {
 
+    public Map<UUID, Wallet> wallets;
+    public Blockchain blockchain;
+
+    private Economy provider;
+
     @Override
     public void onEnable() {
+        this.wallets = new HashMap<>();
+
         //Make a datafolder
         if (!this.getDataFolder().exists()) {
             if (!this.getDataFolder().mkdirs()) {
@@ -44,5 +59,16 @@ public class SteveCoin extends JavaPlugin {
         if (!debug) {
             Configurator.setRootLevel(Level.INFO);
         }
+    }
+
+    private void hook() {
+        this.provider = new EconomyImplementor(this);
+        Bukkit.getServicesManager().register(Economy.class, this.provider, this, ServicePriority.Normal);
+        Bukkit.getLogger().info("SteveCoin registered as economy");
+    }
+
+    private void unhook() {
+        Bukkit.getServicesManager().unregister(Economy.class, this.provider);
+        Bukkit.getLogger().info("SteveCoin unregistered");
     }
 }
