@@ -14,7 +14,7 @@
   },
 
   "version": {
-    "name": "0.0.3",
+    "name": "0.0.4",
     "desc": "Initial version. Will not run on servers properly.",
     "released": "2018-01-22",
     "gpgSign": false
