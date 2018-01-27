@@ -1,15 +1,17 @@
+[![forthebadge](http://forthebadge.com/images/badges/uses-badges.svg)](http://forthebadge.com)
+
 [![Build Status](https://travis-ci.org/nikmanG/SteveCoin.svg?branch=master)](https://travis-ci.org/nikmanG/SteveCoin)
 [![codecov](https://codecov.io/gh/nikmanG/SteveCoin/branch/master/graph/badge.svg)](https://codecov.io/gh/nikmanG/SteveCoin)
 [![Download](https://api.bintray.com/packages/nikmang/nik-plugins/stevecoin/images/download.svg)](https://bintray.com/nikmang/nik-plugins/stevecoin/_latestVersion)
 [![Minecraft Versions](https://img.shields.io/badge/Minecraft%20Versions-1.12.2-orange.svg)](https://minecraft.net)
-[![Javadocs](https://img.shields.io/badge/Javadocs-0.0.3-orange.svg)](https://nikmang.github.io/SteveCoin/index.html)
+[![Javadocs](https://img.shields.io/badge/Javadocs-0.0.4-orange.svg)](https://nikmang.github.io/SteveCoin/index.html)
 
 # What this project is **NOT**
 Rather than explain what this project is about (and it is below), I'll start with briefly saying what it isn't.
 
 The project is not:
 - A new cryptocurrency that uses Minecraft servers for mining and promotion
-- A software that uses servers as miners for a coin
+- A software that uses servers as miners for a real coin
 
 # What this project is
 First and foremost it is a [Spigot](https://www.spigotmc.org/) plugin.
@@ -28,6 +30,6 @@ Also many of the accessories I use in this (Travis CI, Bintray, Codecov) are nov
 What I hope to accomplish in the end is a simulator for cryptocoins, with possible (and this is far fetched) ability to convert this between servers over BungeeCord.
 
 # Current state of plugin
-Right now (version 0.0.3) the plugin has the workings of a very simplistic blockchain coin. It is integrated with Vault but does not contain any workings to actually function as a plugin.
-This means there are no commands, listeners or other gameplay features.
+Right now (version 0.0.4) the plugin possesses the bare minimum to work. It has commands to send coins, listeners for creating wallets, but no saving capability.
+Currently, players can only own one wallet.
 The plugin does not possess multi-world or multi-server (bungeecord) support.
