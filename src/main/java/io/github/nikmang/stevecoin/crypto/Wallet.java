@@ -86,7 +86,8 @@ public class Wallet {
     }
 
     /**
-     * Sends funds from this wallet to a different, designated one.
+     * Sends funds from this wallet to a different, designated one.<br>
+     * This function does not automatically add the transaction to the newest block.
      *
      * @param uTxOuts   List of all current unspent outgoing transactions.
      * @param recipient Recipient of the coins.

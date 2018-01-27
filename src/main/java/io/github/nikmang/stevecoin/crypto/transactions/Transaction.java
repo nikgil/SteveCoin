@@ -17,8 +17,6 @@ import java.util.Map;
  * An individual transaction in a block.
  */
 public class Transaction {
-    //TODO: add transactions into signing process
-
     private static int sequence; //amount of generated transactions
     private static double minimumTransaction;
 
@@ -33,7 +31,7 @@ public class Transaction {
 
     static {
         sequence = 0;
-        minimumTransaction = 0.0000001;
+        minimumTransaction = 0.000001;
     }
 
     public Transaction(PublicKey sender, PublicKey receiver, double value, List<TxIn> inputs) {

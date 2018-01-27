@@ -21,6 +21,7 @@ import io.github.nikmang.stevecoin.crypto.Blockchain;
 import io.github.nikmang.stevecoin.crypto.Wallet;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
@@ -43,11 +44,12 @@ public class SteveCoin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.wallets = new HashMap<>();
+        this.blockchain = new Blockchain();
 
         //Make a datafolder
         if (!this.getDataFolder().exists()) {
             if (!this.getDataFolder().mkdirs()) {
-                Bukkit.getLogger().warning("Could not create main plugin folder. Need to do so manually");
+                LogManager.getRootLogger().warn("Could not create main plugin folder. Need to do so manually");
             }
         }
 
@@ -59,16 +61,20 @@ public class SteveCoin extends JavaPlugin {
         if (!debug) {
             Configurator.setRootLevel(Level.INFO);
         }
+
+        //TODO: listeners
+        //TODO: commands
+        //TODO: blockchain loading
     }
 
     private void hook() {
         this.provider = new EconomyImplementor(this);
         Bukkit.getServicesManager().register(Economy.class, this.provider, this, ServicePriority.Normal);
-        Bukkit.getLogger().info("SteveCoin registered as economy");
+        LogManager.getRootLogger().info("SteveCoin registered as economy");
     }
 
     private void unhook() {
         Bukkit.getServicesManager().unregister(Economy.class, this.provider);
-        Bukkit.getLogger().info("SteveCoin unregistered");
+        LogManager.getRootLogger().info("SteveCoin unregistered");
     }
 }
