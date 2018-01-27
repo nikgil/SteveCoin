@@ -5,7 +5,7 @@ jdk:
     - openjdk8
 script: "mvn cobertura:cobertura install"
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash) -f "!EconomyImplementor.java" -f "!SteveCoin.java" -f "MessageManager.java" -f "
 deploy:
   provider: bintray
   file: "descriptor.json"
