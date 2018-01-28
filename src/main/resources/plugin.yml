@@ -4,5 +4,6 @@ main: ${mainClass}
 author: ${author}
 
 depend: [Vault]
-permissions:
 commands:
+    stevecoin:
+        usage: /<command>
