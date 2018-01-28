@@ -17,16 +17,24 @@
  */
 package io.github.nikmang.stevecoin;
 
+import io.github.nikmang.stevecoin.cmds.Balance;
+import io.github.nikmang.stevecoin.cmds.Send;
 import io.github.nikmang.stevecoin.crypto.Blockchain;
 import io.github.nikmang.stevecoin.crypto.Wallet;
+import io.github.nikmang.stevecoin.listeners.OnJoin;
+import io.github.nikmang.stevecoin.listeners.SignClick;
+import io.github.nikmang.stevecoin.listeners.SignCreation;
+import io.github.nikmang.stevecoin.utils.cmds.CommandMaster;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,6 +51,8 @@ public class SteveCoin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Security.addProvider(new BouncyCastleProvider());
+
         this.wallets = new HashMap<>();
         this.blockchain = new Blockchain();
 
@@ -63,7 +73,16 @@ public class SteveCoin extends JavaPlugin {
         }
 
         //TODO: listeners
+        Bukkit.getPluginManager().registerEvents(new SignClick(), this);
+        Bukkit.getPluginManager().registerEvents(new OnJoin(this), this);
+        Bukkit.getPluginManager().registerEvents(new SignCreation(), this);
+
         //TODO: commands
+        CommandMaster cm = new CommandMaster("Steve Coin");
+        this.getCommand("stevecoin").setExecutor(cm);
+
+        cm.addCommand(new Send(this));
+        cm.addCommand(new Balance(this));
         //TODO: blockchain loading
     }
 
