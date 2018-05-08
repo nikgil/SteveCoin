@@ -33,3 +33,8 @@ What I hope to accomplish in the end is a simulator for cryptocoins, with possib
 Right now (version 0.0.4) the plugin possesses the bare minimum to work. It has commands to send coins, listeners for creating wallets, but no saving capability.
 Currently, players can only own one wallet.
 The plugin does not possess multi-world or multi-server (bungeecord) support.
+
+# YourKit Profiler
+Would like to say a huge thanks to YourKit Profiler. They assist in keeping the plugin using resources as optimally as possible, and visualize memory leaks and other issues that arise in gameplay.<br>
+Click the logo to visit their site!<br>
+[![YourKit Profiler](https://www.yourkit.com/images/yklogo.png)](https://www.yourkit.com/java/profiler/)
